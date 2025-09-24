@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Observasi Satuan Pendidikan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .view { transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
+        .modal-backdrop { transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease; }
+        .hidden-view { opacity: 0; transform: scale(0.98); pointer-events: none; position: absolute; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        tbody tr:nth-child(odd) { background-color: #f9fafb; }
+        thead { position: sticky; top: 0; background-color: #f3f4f6; }
+        .nav-button {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 4px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #14b8a6; /* teal-500 */
+            color: #0d9488; /* teal-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+        
+        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-md">
+            <h1 class="text-3xl font-bold text-gray-700">Aplikasi Observasi Satuan Pendidikan</h1>
+            <p class="text-gray-500 mt-2">Pilih menu di bawah untuk mengisi formulir atau melihat laporan.</p>
+            <nav class="flex justify-center items-center gap-4 sm:gap-8 mt-6 border-t pt-4">
+                <button id="nav-form-btn" class="nav-button active text-lg font-semibold py-2 px-4 text-gray-600 hover:text-teal-600">
+                    <i class="fas fa-edit mr-2"></i>Input Formulir
+                </button>
+                <button id="nav-report-btn" class="nav-button text-lg font-semibold py-2 px-4 text-gray-600 hover:text-teal-600">
+                    <i class="fas fa-chart-bar mr-2"></i>Laporan Observasi
+                </button>
+                <button id="nav-stats-btn" class="nav-button text-lg font-semibold py-2 px-4 text-gray-600 hover:text-teal-600">
+                    <i class="fas fa-percentage mr-2"></i>Statistik Daerah
+                </button>
+            </nav>
+        </header>
+        
+        <main class="relative">
+            <div id="form-view" class="view">
+                <form id="observasiForm" class="bg-white p-8 rounded-xl shadow-lg space-y-8 max-w-4xl mx-auto">
+                    <fieldset class="form-section border-t-4 border-teal-500 pt-6">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">DATA PETUGAS SUPERVISI</legend>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <label for="kota_kabupaten" class="block text-sm font-medium text-gray-600 mb-1">Kota/Kabupaten</label>
+                                <select id="kota_kabupaten" name="kota_kabupaten" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                                    <option value="" disabled selected>Pilih Kota/Kabupaten...</option>
+                                    <option value="Kota Adm Jakarta Barat">Kota Adm Jakarta Barat</option>
+                                    <option value="Kabupaten Tasikmalaya">Kabupaten Tasikmalaya</option>
+                                    <option value="Kabupaten Klaten">Kabupaten Klaten</option>
+                                    <option value="Kota Surabaya">Kota Surabaya</option>
+                                    <option value="Kota Malang">Kota Malang</option>
+                                    <option value="Kabupaten Musi Banyuasin">Kabupaten Musi Banyuasin</option>
+                                    <option value="Kabupaten Pesawaran">Kabupaten Pesawaran</option>
+                                    <option value="Kabupaten Katingan">Kabupaten Katingan</option>
+                                    <option value="Kabupaten Banjar">Kabupaten Banjar</option>
+                                    <option value="Kota Bitung">Kota Bitung</option>
+                                    <option value="Kabupaten Sigi">Kabupaten Sigi</option>
+                                    <option value="Kota Palu">Kota Palu</option>
+                                    <option value="Kabupaten Lombok Barat">Kabupaten Lombok Barat</option>
+                                    <option value="Kota Serang">Kota Serang</option>
+                                    <option value="Kabupaten Pohuwato">Kabupaten Pohuwato</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="nama_petugas" class="block text-sm font-medium text-gray-600 mb-1">Nama Petugas Supervisi</label>
+                                <input type="text" id="nama_petugas" name="nama_petugas" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="no_hp_petugas" class="block text-sm font-medium text-gray-600 mb-1">No. HP Petugas</label>
+                                <input type="tel" id="no_hp_petugas" name="no_hp_petugas" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-section border-t-4 border-indigo-500 pt-6">
+                        <legend class="text-xl font-semibold text-gray-700 px-2">DATA RESPONDEN</legend>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <label for="nama_responden" class="block text-sm font-medium text-gray-600 mb-1">Nama Responden</label>
+                                <input type="text" id="nama_responden" name="nama_responden" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="nama_satuan_pendidikan" class="block text-sm font-medium text-gray-600 mb-1">Nama Satuan Pendidikan</label>
+                                <input type="text" id="nama_satuan_pendidikan" name="nama_satuan_pendidikan" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label for="alamat_satuan_pendidikan" class="block text-sm font-medium text-gray-600 mb-1">Alamat Satuan Pendidikan</label>
+                                <textarea id="alamat_satuan_pendidikan" name="alamat_satuan_pendidikan" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required></textarea>
+                            </div>
+                            <div>
+                                <label for="nama_kepala_sekolah" class="block text-sm font-medium text-gray-600 mb-1">Nama Kepala Sekolah</label>
+                                <input type="text" id="nama_kepala_sekolah" name="nama_kepala_sekolah" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="no_hp_kepala_sekolah" class="block text-sm font-medium text-gray-600 mb-1">No. HP Kepala Sekolah</label>
+                                <input type="tel" id="no_hp_kepala_sekolah" name="no_hp_kepala_sekolah" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm" required>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div id="question-sections-container"></div>
+                    <div id="navigation-controls" class="flex justify-between items-center pt-6 border-t mt-8">
+                        <button type="button" id="prev-button" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg">Sebelumnya</button>
+                        <button type="button" id="next-button" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-6 rounded-lg">Berikutnya</button>
+                        <button type="submit" id="submit-button" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-lg shadow-md hidden"><span id="button-text">Kirim Data</span><i id="loading-spinner" class="fas fa-spinner fa-spin ml-2 hidden"></i></button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="report-view" class="view hidden-view">
+                <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                         <h2 class="text-2xl font-bold text-gray-700 mb-2 sm:mb-0">Hasil Observasi Rinci</h2>
+                        <div class="w-full sm:w-auto">
+                            <label for="region-filter" class="block text-sm font-medium text-gray-600 mb-1">Pilih Daerah:</label>
+                            <select id="region-filter" class="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+                                <option value="semua">Semua Daerah</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="report-container" class="overflow-x-auto">
+                        <div class="text-center p-8 text-gray-500">Pilih daerah untuk menampilkan data.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stats-view" class="view hidden-view">
+                <div class="bg-white p-8 rounded-xl shadow-lg space-y-12">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6">Visualisasi Status Input Daerah</h2>
+                        <div class="max-w-xs mx-auto">
+                            <canvas id="inputChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="border-t pt-8">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6">Tabel Status Input Daerah</h2>
+                        <div id="status-table-container"></div>
+                    </div>
+                     <div class="border-t pt-8">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6">Statistik Kelengkapan Input per Daerah</h2>
+                        <div id="stats-container" class="overflow-x-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="responseModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-backdrop hidden z-50 opacity-0">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full text-center modal-content scale-95">
+            <div id="modal-icon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"></div>
+            <h3 id="modal-title" class="text-2xl font-semibold text-gray-800"></h3>
+            <p id="modal-message" class="text-gray-600 mt-2 mb-6"></p>
+            <button id="modal-close" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-lg">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyjWKPkPs8dUl2cQnmEQwpxcjbxE0bSlibVmfsJTwS-Do_iYBdh0c7-Rw3X4bISaHEdlg/exec';
+        
+        // --- Bagian Form (tidak berubah) ---
+        const form = document.getElementById('observasiForm');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const questionContainer = document.getElementById('question-sections-container');
+        const masterData = [
+            { id: 'kota_kabupaten', type: 'select' }, { id: 'nama_petugas', type: 'text' }, { id: 'no_hp_petugas', type: 'tel' }, { id: 'nama_responden', type: 'text' }, { id: 'nama_satuan_pendidikan', type: 'text' }, { id: 'alamat_satuan_pendidikan', type: 'textarea' }, { id: 'nama_kepala_sekolah', type: 'text' }, { id: 'no_hp_kepala_sekolah', type: 'tel' },
+            { id: 'akses_q1', type: 'radio', text: '1. Apakah ada upaya yang dilakukan sekolah dalam mencegah Anak Berisiko Putus Sekolah (ABPS)?' }, { id: 'akses_q1_note', type: 'textarea' },
+            { id: 'akses_q2', type: 'radio', text: '2. Apakah ada dukungan/bantuan yang diberikan oleh pihak sekolah atau dinas dalam mencegah Anak Berisiko Putus Sekolah (ABPS)?' }, { id: 'akses_q2_note', type: 'textarea' },
+            { id: 'akses_q3', type: 'radio', text: '3. Apakah fasilitas ramah anak dan ramah disabilitas tetap dipelihara dengan baik?' }, { id: 'akses_q3_note', type: 'textarea' },
+            { id: 'akses_q4', type: 'radio', text: '4. Apakah sekolah memiliki inovasi layanan akses (misalnya kelas tambahan, transportasi, atau program khusus)?' }, { id: 'akses_q4_note', type: 'textarea' },
+            { id: 'akses_q5', type: 'radio', text: '5. Apakah ada pengalaman sekolah dalam mempertahankan APS tinggi sudah didokumentasikan dan disebarluaskan untuk replikasi?' }, { id: 'akses_q5_note', type: 'textarea' },
+            { id: 'mutu_q1', type: 'radio', text: '1. Apakah guru menerapkan metode pembelajaran inovatif (digital, tematik, berbasis proyek) yang menjaga mutu meski ATS rendah?' }, { id: 'mutu_q1_note', type: 'textarea' },
+            { id: 'mutu_q2', type: 'radio', text: '2. Apakah program literasi dan numerasi berjalan konsisten dan hasilnya terukur?' }, { id: 'mutu_q2_note', type: 'textarea' },
+            { id: 'mutu_q3', type: 'radio', text: '3. Apakah kegiatan ekstrakurikuler mendukung prestasi akademik dan non-akademik siswa?' }, { id: 'mutu_q3_note', type: 'textarea' },
+            { id: 'mutu_q4', type: 'radio', text: '4. Apakah sekolah memiliki program unggulan yang memperkuat Profil Pelajar Pancasila?' }, { id: 'mutu_q4_note', type: 'textarea' },
+            { id: 'mutu_q5', type: 'radio', text: '5. Apakah praktik mutu pembelajaran sekolah ini sudah dibagikan ke sekolah lain (forum MGMP/KKG)?' }, { id: 'mutu_q5_note', type: 'textarea' },
+            { id: 'tata_kelola_q1', type: 'radio', text: '1. Apakah kepala sekolah aktif menjaga stabilitas APS dan mutu layanan pendidikan?' }, { id: 'tata_kelola_q1_note', type: 'textarea' },
+            { id: 'tata_kelola_q2', type: 'radio', text: '2. Apakah sekolah memiliki strategi keberlanjutan program meski tanpa intervensi eksternal?' }, { id: 'tata_kelola_q2_note', type: 'textarea' },
+            { id: 'tata_kelola_q3', type: 'radio', text: '3. Apakah transparansi dana BOS tetap dijaga meskipun sekolah sudah stabil (APS bagus)?' }, { id: 'tata_kelola_q3_note', type: 'textarea' },
+            { id: 'tata_kelola_q4', type: 'radio', text: '4. Apakah keterlibatan orang tua/komite sekolah sudah menjadi budaya dalam tata kelola?' }, { id: 'tata_kelola_q4_note', type: 'textarea' },
+            { id: 'tata_kelola_q5', type: 'radio', text: '5. Apakah tata kelola yang berhasil di sekolah ini sudah menjadi rujukan/replikasi bagi sekolah lain?' }, { id: 'tata_kelola_q5_note', type: 'textarea' }
+        ];
+        let allSections, currentSectionIndex = 0;
+        
+        // --- Bagian Navigasi & Tampilan ---
+        const views = { form: document.getElementById('form-view'), report: document.getElementById('report-view'), stats: document.getElementById('stats-view') };
+        const navButtons = { form: document.getElementById('nav-form-btn'), report: document.getElementById('nav-report-btn'), stats: document.getElementById('nav-stats-btn') };
+        const reportContainer = document.getElementById('report-container');
+        const statsContainer = document.getElementById('stats-container');
+        const regionFilter = document.getElementById('region-filter');
+        const statusTableContainer = document.getElementById('status-table-container');
+        const chartCanvas = document.getElementById('inputChart');
+        let inputChart = null; // Variabel untuk menyimpan objek chart
+
+        // --- Fungsi Bantuan ---
+        const setContainerLoading = (container) => {
+            container.innerHTML = `<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-3xl text-gray-500"></i><p class="mt-2">Memuat data...</p></div>`;
+        };
+        const setContainerError = (container, message) => {
+            container.innerHTML = `<div class="text-center p-8 text-red-600"><i class="fas fa-exclamation-triangle text-3xl"></i><p class="mt-2 font-semibold">Gagal memuat data</p><p class="text-sm text-gray-500">${message}</p></div>`;
+        };
+
+        // --- Manajemen Tampilan ---
+        function showView(viewName) {
+            Object.keys(views).forEach(key => {
+                views[key].classList.add('hidden-view');
+                navButtons[key].classList.remove('active');
+            });
+            views[viewName].classList.remove('hidden-view');
+            navButtons[viewName].classList.add('active');
+        }
+
+        // --- Event Listeners untuk Navigasi ---
+        navButtons.form.addEventListener('click', () => showView('form'));
+        navButtons.report.addEventListener('click', () => {
+            showView('report');
+            fetchObservationReport(regionFilter.value);
+        });
+        navButtons.stats.addEventListener('click', () => {
+            showView('stats');
+            // Memanggil semua fungsi yang dibutuhkan untuk halaman statistik
+            updateInputStatusAndChart();
+            fetchRegionalStats();
+        });
+
+        // --- Logika untuk Grafik dan Tabel Status (BARU) ---
+        function updateInputStatusAndChart() {
+            setContainerLoading(statusTableContainer);
+            if (inputChart) {
+                inputChart.destroy(); // Hancurkan chart lama jika ada
+            }
+
+            // 1. Ambil daftar semua daerah dari dropdown formulir
+            const allRegions = Array.from(document.querySelectorAll('#kota_kabupaten option'))
+                                   .filter(opt => opt.value !== '')
+                                   .map(opt => opt.value);
+            
+            // 2. Ambil daftar daerah yang sudah input dari Google Sheet
+            fetch(`${scriptURL}?view=get_regions`)
+                .then(res => res.json())
+                .then(submittedRegions => {
+                    if (submittedRegions.error) throw new Error(submittedRegions.error);
+
+                    // 3. Bandingkan dua daftar untuk menemukan yang belum input
+                    const belumInputRegions = allRegions.filter(region => !submittedRegions.includes(region));
+                    const sudahInputRegions = submittedRegions;
+
+                    // 4. Render Tabel Status
+                    let tableHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-lg font-semibold text-green-600 mb-3"><i class="fas fa-check-circle mr-2"></i>Daerah Sudah Input (${sudahInputRegions.length})</h3>
+                            <ul class="space-y-2">${sudahInputRegions.map(r => `<li class="p-2 bg-green-50 rounded-md text-sm">${r}</li>`).join('') || `<li class="text-gray-500">Belum ada</li>`}</ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-red-600 mb-3"><i class="fas fa-times-circle mr-2"></i>Daerah Belum Input (${belumInputRegions.length})</h3>
+                            <ul class="space-y-2">${belumInputRegions.map(r => `<li class="p-2 bg-red-50 rounded-md text-sm">${r}</li>`).join('') || `<li class="text-gray-500">Semua sudah input</li>`}</ul>
+                        </div>
+                    </div>`;
+                    statusTableContainer.innerHTML = tableHTML;
+
+                    // 5. Render Grafik
+                    const ctx = chartCanvas.getContext('2d');
+                    inputChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Sudah Input', 'Belum Input'],
+                            datasets: [{
+                                label: 'Status Input Daerah',
+                                data: [sudahInputRegions.length, belumInputRegions.length],
+                                backgroundColor: [ 'rgb(34, 197, 94)', 'rgb(239, 68, 68)' ],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                title: { display: true, text: 'Perbandingan Daerah Sudah vs Belum Input' }
+                            }
+                        }
+                    });
+                })
+                .catch(err => setContainerError(statusTableContainer, err.message));
+        }
+
+        // --- Logika Fetch Data Lainnya (tidak berubah) ---
+        function fetchRegionalStats() {
+            setContainerLoading(statsContainer);
+            fetch(`${scriptURL}?view=regional_stats`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) throw new Error(data.error);
+                    let tableHTML = `<table class="w-full text-sm">
+                        <thead class="bg-gray-100"><tr><th>Nama Daerah</th><th class="text-center">Jumlah Input</th><th class="text-center">Rata-rata Kelengkapan</th></tr></thead><tbody>`;
+                    if (data.length === 0) {
+                        tableHTML += `<tr><td colspan="3" class="text-center py-4">Belum ada data yang masuk.</td></tr>`;
+                    } else {
+                        data.forEach(item => {
+                            tableHTML += `<tr><td class="font-medium">${item.nama_daerah}</td><td class="text-center">${item.input}</td><td class="text-center">${item.persentase}%</td></tr>`;
+                        });
+                    }
+                    statsContainer.innerHTML = tableHTML + `</tbody></table>`;
+                })
+                .catch(err => setContainerError(statsContainer, err.message));
+        }
+
+        function populateRegionDropdown() {
+            fetch(`${scriptURL}?view=get_regions`)
+                .then(res => res.json())
+                .then(regions => {
+                    if (regions.error) throw new Error(regions.error);
+                    regionFilter.innerHTML = '<option value="semua">Semua Daerah</option>';
+                    regions.forEach(region => {
+                        const option = document.createElement('option');
+                        option.value = region;
+                        option.textContent = region;
+                        regionFilter.appendChild(option);
+                    });
+                })
+                .catch(err => console.error("Gagal memuat daftar daerah:", err));
+        }
+        
+        function fetchObservationReport(region = 'semua') {
+            setContainerLoading(reportContainer);
+            const url = `${scriptURL}?view=summary&region=${encodeURIComponent(region)}`;
+            fetch(url)
+                .then(res => res.json())
+                .then(summaryData => {
+                    if (summaryData.error) throw new Error(summaryData.error);
+                    let tableHTML = `<table class="w-full text-sm">
+                        <thead class="bg-gray-100"><tr><th class="w-1/3">Pertanyaan</th><th class="text-center">Ya</th><th class="text-center">Tidak</th><th class="text-center">Tidak Optimal</th><th>Catatan Tambahan</th></tr></thead><tbody>`;
+                    if (Object.keys(summaryData).length === 0) {
+                       tableHTML += `<tr><td colspan="5" class="text-center py-4">Belum ada data observasi.</td></tr>`;
+                    } else {
+                       for (const question in summaryData) {
+                           const data = summaryData[question];
+                           const notesHTML = data.catatan.map(note => `<li class="list-disc ml-4">${note}</li>`).join('');
+                           tableHTML += `<tr><td class="font-medium">${question}</td><td class="text-center">${data.ya}</td><td class="text-center">${data.tidak}</td><td class="text-center">${data.tidakOptimal}</td><td><ul class="space-y-1">${notesHTML || 'Tidak ada'}</ul></td></tr>`;
+                       }
+                    }
+                    reportContainer.innerHTML = tableHTML + `</tbody></table>`;
+                })
+                .catch(err => setContainerError(reportContainer, err.message));
+        }
+
+        regionFilter.addEventListener('change', () => fetchObservationReport(regionFilter.value));
+
+        // --- Logika Form (tidak berubah) ---
+        function showModal(type, title, message) {
+            const modal = document.getElementById('responseModal'), modalContent = document.querySelector('.modal-content'), modalIcon = document.getElementById('modal-icon'), modalTitle = document.getElementById('modal-title'), modalMessage = document.getElementById('modal-message');
+            modalIcon.innerHTML = type === 'success' ? `<i class="fas fa-check text-4xl text-green-500"></i>` : `<i class="fas fa-times text-4xl text-red-500"></i>`;
+            modalIcon.className = `mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 ${type === 'success' ? 'bg-green-100' : 'bg-red-100'}`;
+            modalTitle.textContent = title; modalMessage.textContent = message; modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95'); }, 10);
+        }
+        function hideModal() {
+            const modal = document.getElementById('responseModal'), modalContent = document.querySelector('.modal-content');
+            modal.classList.add('opacity-0'); modalContent.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+        document.getElementById('modal-close').addEventListener('click', hideModal);
+        function updateButtonVisibility() {
+            prevButton.classList.toggle('hidden', currentSectionIndex === 0);
+            nextButton.classList.toggle('hidden', currentSectionIndex === allSections.length - 1);
+            submitButton.classList.toggle('hidden', currentSectionIndex !== allSections.length - 1);
+        }
+        function showSection(index) {
+            allSections.forEach((s, i) => s.classList.toggle('hidden', i !== index));
+            updateButtonVisibility();
+            window.scrollTo(0, 0);
+        }
+        function validateCurrentSection() {
+            const s = allSections[currentSectionIndex];
+            for (const i of s.querySelectorAll('[required]')) { if (!i.checkValidity()) return false; }
+            return true;
+        }
+        nextButton.addEventListener('click', () => {
+            if (validateCurrentSection()) { currentSectionIndex++; showSection(currentSectionIndex); } else { form.reportValidity(); }
+        });
+        prevButton.addEventListener('click', () => { currentSectionIndex--; showSection(currentSectionIndex); });
+        function generateQuestions() {
+            const sections = { akses: { b: 'border-blue-500', h: '' }, mutu: { b: 'border-purple-500', h: '' }, tata_kelola: { b: 'border-green-500', h: '' } };
+            for (let i = 0; i < masterData.length; i++) {
+                const field = masterData[i];
+                if (field.type === 'radio') {
+                    const noteField = masterData[i + 1]; const sData = sections[field.id.split('_')[0]];
+                    if (sData) sData.h += `<div class="bg-gray-50 p-4 rounded-lg border"><p class="font-medium text-gray-700 mb-2">${field.text}</p><div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-3">${['Ya','Tidak','Tidak Optimal'].map(o=>`<label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="${field.id}" value="${o}" class="h-4 w-4 text-teal-600" required><span>${o}</span></label>`).join('')}</div><label class="block text-sm font-medium text-gray-600 mb-1">Catatan Tambahan</label><textarea name="${noteField.id}" rows="2" class="w-full px-3 py-2 border rounded-md"></textarea></div>`;
+                }
+            }
+            questionContainer.innerHTML = `<fieldset class="form-section border-t-4 ${sections.akses.b} pt-6"><legend class="text-xl font-semibold text-gray-700 px-2">AKSES</legend><div class="space-y-6 mt-4">${sections.akses.h}</div></fieldset><fieldset class="form-section border-t-4 ${sections.mutu.b} pt-6"><legend class="text-xl font-semibold text-gray-700 px-2">MUTU</legend><div class="space-y-6 mt-4">${sections.mutu.h}</div></fieldset><fieldset class="form-section border-t-4 ${sections.tata_kelola.b} pt-6"><legend class="text-xl font-semibold text-gray-700 px-2">TATA KELOLA</legend><div class="space-y-6 mt-4">${sections.tata_kelola.h}</div></fieldset>`;
+        }
+        function initializeForm() {
+            generateQuestions();
+            allSections = document.querySelectorAll('.form-section');
+            showSection(0);
+        }
+        form.addEventListener('submit', e => {
+            e.preventDefault(); if(!validateCurrentSection()){ form.reportValidity(); return; }
+            submitButton.disabled = true; buttonText.textContent = 'Mengirim...'; loadingSpinner.classList.remove('hidden');
+            const rowData = masterData.map(f => { const el = form.elements[f.id]; return (el instanceof RadioNodeList) ? el.value || "" : el.value || ""; });
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(rowData), headers: { 'Content-Type': 'text/plain;charset=utf-8' }})
+            .then(res => res.json()).then(data => { 
+                if (data.result === "success") { 
+                    form.reset(); 
+                    currentSectionIndex = 0; 
+                    showSection(0); 
+                    showModal('success', 'Berhasil!', 'Data observasi Anda telah berhasil dikirim.'); 
+                    populateRegionDropdown();
+                } else { 
+                    throw new Error(data.message); 
+                }
+            })
+            .catch(err => showModal('error', 'Gagal!', 'Gagal mengirim data: ' + err.message))
+            .finally(() => { 
+                submitButton.disabled = false; 
+                buttonText.textContent = 'Kirim Data'; 
+                loadingSpinner.classList.add('hidden'); 
+            });
+        });
+
+        // --- Inisialisasi Awal ---
+        initializeForm();
+        populateRegionDropdown();
+    });
+    </script>
+</body>
+</html>
