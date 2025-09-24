@@ -106,10 +106,10 @@
                 <h2 class="text-3xl font-bold text-white mb-4">Sekolah Dasar</h2>
                 <p class="text-white/80 mb-8">Akses tautan terkait untuk manajemen dan observasi Sekolah Dasar.</p>
                 <div class="grid grid-cols-2 gap-4 w-full">
-                    <button data-url="ObservasiSD" class="action-button bg-blue-500/80 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Observasi SD</button>
-                    <button data-url="ObservasiSD" class="action-button bg-blue-500/80 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Dinas</button>
-                    <button data-url="SatuanPendidikanSD" class="action-button bg-blue-500/80 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Satuan Pendidikan</button>
-                    <a href="https://drive.google.com/uc?export=download&id=1IeT05S9SrVssWX2jKJVfkuCFI_nggRZcjwGPZ15vcas" target="_blank" rel="noopener noreferrer" class="bg-green-500/80 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Dokumen</a>
+                    <button data-url="ObservasiSD.html" class="action-button bg-blue-500/80 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Observasi SD</button>
+                    <button data-url="DinasSD.html" class="action-button bg-blue-500/80 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Dinas</button>
+                    <button data-url="SatpenSD.html" class="action-button bg-blue-500/80 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Satuan Pendidikan</button>
+                    <a href="https://drive.google.com/uc?export=download&id=1IeT05S9SrVssWX2jKJVfkuCFI_nggRZcjwGPZ15vcas" target="_blank" rel="noopener noreferrer" class="bg-green-500/80 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 flex items-center justify-center">Dokumen</a>
                 </div>
             </div>
 
@@ -121,10 +121,10 @@
                 <h2 class="text-3xl font-bold text-white mb-4">SKBM</h2>
                 <p class="text-white/80 mb-8">Akses tautan terkait untuk manajemen Sanggar Kegiatan Belajar Mandiri.</p>
                 <div class="grid grid-cols-2 gap-4 w-full">
-                    <button data-url="ObservasiSD" class="action-button bg-teal-500/80 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Observasi SKBM</button>
-                    <button data-url="ObservasiSD" class="action-button bg-teal-500/80 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Dinas</button>
-                    <button data-url="ObservasiSD" class="action-button bg-teal-500/80 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Satuan Pendidikan</button>
-                    <a href="https://drive.google.com/uc?export=download&id=1IeT05S9SrVssWX2jKJVfkuCFI_nggRZcjwGPZ15vcas" target="_blank" rel="noopener noreferrer" class="bg-green-500/80 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Dokumen</a>
+                    <button data-url="ObservasiSD.html" class="action-button bg-teal-500/80 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Observasi SKBM</button>
+                    <button data-url="DinasSD.html" class="action-button bg-teal-500/80 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Dinas</button>
+                    <button data-url="SatpenSD.html" class="action-button bg-teal-500/80 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105">Satuan Pendidikan</button>
+                    <a href="https://drive.google.com/uc?export=download&id=1IeT05S9SrVssWX2jKJVfkuCFI_nggRZcjwGPZ15vcas" target="_blank" rel="noopener noreferrer" class="bg-green-500/80 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105 flex items-center justify-center">Dokumen</a>
                 </div>
             </div>
 
@@ -155,14 +155,14 @@
         const errorMessage = document.getElementById('error-message');
         const actionButtons = document.querySelectorAll('.action-button');
 
-        // Kata sandi bisa berbeda untuk setiap URL
+        // PERBAIKAN: Kunci objek disesuaikan dengan nilai data-url yang baru
         const passwords = {
-            "ObservasiSD": "WAJAR13",
-            "DinasSD": "WAJAR13",
-            "SatuanPendidikanSD": "WAJAR13",
-            "ObservasiSKBM": "WAJAR13",
-            "DinasSKBM": "WAJAR13",
-            "SatuanPendidikanSKBM": "WAJAR13",
+            "ObservasiSD.html": "WAJAR13",
+            "DinasSD.html": "WAJAR13",
+            "SatpenSD.html": "WAJAR13",
+            "ObservasiSD.html": "WAJAR13",
+            "DinasSD.html": "WAJAR13",
+            "SatpenSD.html": "WAJAR13",
         };
         let targetUrl = '';
 
@@ -198,10 +198,13 @@
         submitButton.addEventListener('click', () => {
             const correctPassword = passwords[targetUrl];
             if (passwordInput.value === correctPassword) {
-                // Jika password benar, arahkan ke URL tujuan (misalnya)
-                // Di sini kita hanya akan menampilkan alert sebagai contoh
-                // window.location.href = targetUrl; // Ganti baris di bawah dengan ini untuk redirect
-                alert(`Akses diberikan! Anda akan diarahkan ke ${targetUrl}`);
+                // --- PERBAIKAN UTAMA ---
+                // Kode di bawah ini diaktifkan untuk mengarahkan pengguna ke URL tujuan.
+                window.location.href = targetUrl; 
+                
+                // Baris alert dinonaktifkan/dihapus.
+                // alert(`Akses diberikan! Anda akan diarahkan ke ${targetUrl}`);
+                
                 hideModal();
             } else {
                 // Jika password salah, tampilkan pesan error
@@ -253,4 +256,3 @@
 
 </body>
 </html>
-
