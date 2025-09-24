@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satuan Pendidikan (SD)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+	    <link rel="icon" id="favicon" href="https://kemendikdasmen.go.id/web/image/res.company/1/logo/unique_id">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f0f2f5; }
+        .view, .modal-backdrop, .modal-content, .nav-button, button, input, select, textarea { transition: all 0.3s ease-in-out; }
+        button:hover, .nav-button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        input:focus, select:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
+        .view { transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out; }
+        .hidden-view { opacity: 0; transform: translateY(20px); pointer-events: none; position: absolute; width: 100%; }
+        th, td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        tbody tr:hover { background-color: #eff6ff; }
+        thead { position: sticky; top: 0; background-color: #f9fafb; z-index: 10; }
+        .nav-button { border-bottom: 4px solid transparent; padding-bottom: 8px; }
+        .nav-button.active { border-bottom-color: #2563eb; color: #1d4ed8; }
+        .nav-button.active i { transform: scale(1.1); }
+        .card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); padding: 2rem; }
+        @media print {
+            .print-aggregated-report body > *:not(#printable-report-area) { display: none; }
+            .print-aggregated-report #printable-report-area { visibility: visible !important; position: absolute; left: 0; top: 0; width: 100%; padding: 1.5cm; font-size: 11pt; }
+            .print-aggregated-report .print-hide { display: none !important; }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
+        
+        <header class="text-center mb-10 print-hide">
+            <h1 class="text-4xl font-bold text-gray-800">Aplikasi Supervisi Satuan Pendidikan</h1>
+            <p class="text-gray-600 mt-3 text-lg">Pilih menu di bawah untuk memulai.</p>
+            <nav class="flex justify-center items-center gap-4 sm:gap-10 mt-8">
+                <button id="nav-form-btn" class="nav-button active text-lg font-semibold py-2 px-4 text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-edit mr-2"></i>Input Formulir
+                </button>
+                <button id="nav-report-btn" class="nav-button text-lg font-semibold py-2 px-4 text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-chart-pie mr-2"></i>Laporan Agregat
+                </button>
+                <button id="nav-stats-btn" class="nav-button text-lg font-semibold py-2 px-4 text-gray-700 hover:text-blue-600">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dasbor Statistik
+                </button>
+				<a href="./" class="nav-button text-lg font-semibold py-2 px-4 text-gray-700 hover:text-red-600" data-target="home"><i class="fas fa-home mr-2"></i></a>				
+            </nav>
+        </header>
+        
+        <main class="relative">
+            <div id="form-view" class="view">
+                <form id="supervisiForm" class="card space-y-10 max-w-4xl mx-auto">
+                    <fieldset class="form-section border-t-4 border-blue-500 pt-6">
+                        <legend class="text-2xl font-semibold text-gray-700 px-2 -mt-2">
+                            <i class="fas fa-user-shield mr-3 text-blue-500"></i>DATA PETUGAS & RESPONDEN
+                        </legend>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div>
+                                <label for="kota_kabupaten" class="block text-sm font-medium text-gray-700 mb-2">Kota/Kabupaten</label>
+                                <select id="kota_kabupaten" name="kota_kabupaten" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-gray-50" required>
+                                    <option value="" disabled selected>Pilih Kota/Kabupaten...</option>
+                                    <option value="Kota Adm Jakarta Barat">Kota Adm Jakarta Barat</option>
+                                    <option value="Kabupaten Tasikmalaya">Kabupaten Tasikmalaya</option>
+                                    <option value="Kabupaten Klaten">Kabupaten Klaten</option>
+                                    <option value="Kota Surabaya">Kota Surabaya</option>
+                                    <option value="Kota Malang">Kota Malang</option>
+                                    <option value="Kabupaten Musi Banyuasin">Kabupaten Musi Banyuasin</option>
+                                    <option value="Kabupaten Pesawaran">Kabupaten Pesawaran</option>
+                                    <option value="Kabupaten Katingan">Kabupaten Katingan</option>
+                                    <option value="Kabupaten Banjar">Kabupaten Banjar</option>
+                                    <option value="Kota Bitung">Kota Bitung</option>
+                                    <option value="Kabupaten Sigi">Kabupaten Sigi</option>
+                                    <option value="Kota Palu">Kota Palu</option>
+                                    <option value="Kabupaten Lombok Barat">Kabupaten Lombok Barat</option>
+                                    <option value="Kota Serang">Kota Serang</option>
+                                    <option value="Kabupaten Pohuwato">Kabupaten Pohuwato</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="nama_petugas" class="block text-sm font-medium text-gray-700 mb-2">Nama Petugas Supervisi</label>
+                                <input type="text" id="nama_petugas" name="nama_petugas" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="no_hp_petugas" class="block text-sm font-medium text-gray-700 mb-2">No. HP Petugas</label>
+                                <input type="tel" id="no_hp_petugas" name="no_hp_petugas" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="nama_responden" class="block text-sm font-medium text-gray-700 mb-2">Nama Responden</label>
+                                <input type="text" id="nama_responden" name="nama_responden" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
+                                <input type="text" id="jabatan" name="jabatan" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm" required>
+                            </div>
+                            <div>
+                                <label for="no_hp_responden" class="block text-sm font-medium text-gray-700 mb-2">No. HP Responden</label>
+                                <input type="tel" id="no_hp_responden" name="no_hp_responden" class="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm" required>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+                    <div id="question-sections-container"></div>
+
+                    <div id="navigation-controls" class="flex justify-between items-center pt-8 border-t mt-8">
+                        <button type="button" id="prev-button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-8 rounded-lg">
+                            <i class="fas fa-arrow-left mr-2"></i>Sebelumnya
+                        </button>
+                        <button type="button" id="next-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg">
+                            Berikutnya<i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <button type="submit" id="submit-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hidden">
+                            <span id="button-text">Kirim Data</span><i id="loading-spinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="report-view" class="view hidden-view">
+                 <div class="card">
+                    <div id="printable-report-area">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 print-hide">
+                            <h2 class="text-3xl font-bold text-gray-800 mb-2 sm:mb-0">Laporan Agregat Supervisi</h2>
+                            <div class="flex items-end gap-4 w-full sm:w-auto">
+                                <div class="flex-grow sm:flex-grow-0">
+                                    <label for="region-filter" class="block text-sm font-medium text-gray-600 mb-1">Filter Daerah:</label>
+                                    <select id="region-filter" class="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white">
+                                        <option value="semua">Semua Daerah</option>
+                                    </select>
+                                </div>
+                                <button id="print-report-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg self-end hidden">
+                                    <i class="fas fa-print mr-2"></i>Cetak Laporan
+                                </button>
+                            </div>
+                        </div>
+                        <div id="report-content-wrapper"></div>
+                    </div>
+                 </div>
+            </div>
+
+            <div id="stats-view" class="view hidden-view">
+                <div class="space-y-12">
+                    <div class="card">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6 text-center">Visualisasi Status Input Daerah</h2>
+                        <div class="max-w-md mx-auto">
+                            <canvas id="inputChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6">Tabel Status Input Daerah</h2>
+                        <div id="status-table-container"></div>
+                    </div>
+                     <div class="card">
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6">Statistik Kelengkapan Input per Daerah</h2>
+                        <div id="stats-container" class="overflow-x-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="responseModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 modal-backdrop hidden z-50 opacity-0">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center modal-content scale-95 transform">
+            <div id="modal-icon" class="mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-5"></div>
+            <h3 id="modal-title" class="text-2xl font-semibold text-gray-800"></h3>
+            <p id="modal-message" class="text-gray-600 mt-2 mb-8"></p>
+            <div class="flex justify-center gap-4">
+                 <button id="modal-close" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg">Tutup</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // URL Apps Script sudah diatur sesuai dengan yang Anda berikan.
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxf_UCiOwB7Ggikj6AUNcPt2IbqSp2vZ6QWc3oCwL5JmqgHYd9VduuadE49dXxI1iiSkw/exec';
+        
+        const form = document.getElementById('supervisiForm');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const questionContainer = document.getElementById('question-sections-container');
+        
+        // Master data ini disusun berdasarkan daftar pertanyaan baru Anda.
+        const masterData = [
+            // Data Petugas & Responden
+            { id: 'kota_kabupaten', type: 'select' }, { id: 'nama_petugas', type: 'text' }, { id: 'no_hp_petugas', type: 'tel' },
+            { id: 'nama_responden', type: 'text' }, { id: 'jabatan', type: 'text' }, { id: 'no_hp_responden', type: 'tel' },
+
+            // BAGIAN AKSES
+            { id: 'akses_q1', type: 'textarea', text: '1a. Bagaimanakah cara SD mendeteksi dini anak berisiko putus sekolah? Jelaskan!' },
+            { id: 'akses_q2', type: 'textarea', text: '2a. Bantuan/pendekatan apa yang paling efektif agar anak tetap sekolah? Sebutkan dan jelaskan' },
+            { id: 'akses_q3', type: 'radio', text: '3a. Apakah tersedia layanan untuk siswa disabilitas/kebutuhan khusus (kelas inklusi, guru pendamping)?', options: ['Ya', 'Tidak', 'Sebagian'] },
+            { id: 'akses_q3_note', type: 'textarea', text: '3b. Catatan Tambahan' },
+            { id: 'akses_q4', type: 'textarea', text: '4a. Bagaimana penggunaan TIK (komputer, internet, aplikasi) untuk mendukung akses dan motivasi belajar siswa?' },
+            { id: 'akses_q5', type: 'radio', text: '5a. Apakah sekolah bekerja sama dengan desa/komite/orang tua untuk mendukung siswa bersekolah?', options: ['Ya', 'Tidak'] },
+            { id: 'akses_q5_note', type: 'textarea', text: '5a1. Catatan Tambahan' },
+            
+            // BAGIAN MUTU
+            { id: 'mutu_q1', type: 'radio', text: '1a. Apakah guru menggunakan metode pembelajaran variatif (diskusi, proyek, bermain peran, praktik)?', options: ['Ya', 'Tidak'] },
+            { id: 'mutu_q1_note', type: 'textarea', text: '1a1. Catatan Tambahan' },
+            { id: 'mutu_q2', type: 'radio', text: '2a. Apakah 7 Kebiasaan Anak Indonesia Hebat (KAIH) sudah terlaksana dengan baik?', options: ['Ya', 'Tidak', 'Belum Optimal'] },
+            { id: 'mutu_q2_note', type: 'textarea', text: '2a1. Catatan Tambahan' },
+            { id: 'mutu_q3', type: 'textarea', text: '3a. Inovasi apa yang telah dilakukan sekolah dalam meningkatkan kualitas pembelajaran?' },
+            { id: 'mutu_q3_note', type: 'textarea', text: '3b. Keterangan Tambahan' },
+            { id: 'mutu_q4', type: 'textarea', text: '4a. Bagaimana sekolah memantau capaian belajar siswa (tes, portofolio, proyek)?' },
+            { id: 'mutu_q5', type: 'radio', text: '5a. Apakah tersedia layanan konseling/pedampingan bagi siswa dengan masalah akademik/nonakademik?', options: ['Ya', 'Tidak'] },
+            { id: 'mutu_q5_note', type: 'textarea', text: '5a1. Catatan Tambahan' },
+            
+            // BAGIAN TATA KELOLA
+            { id: 'tata_kelola_q1', type: 'textarea', text: '1a. Bagaimana peran kepala sekolah dalam mencegah ATS dan meningkatkan APS?' },
+            { id: 'tata_kelola_q2', type: 'textarea', text: '2a. Bagaimana orang tua/wali terlibat dalam mendukung proses belajar anak?' },
+            { id: 'tata_kelola_q3', type: 'radio', text: '3a. Apakah sekolah menjalin kerja sama dengan pihak lain (LSM, dunia usaha, pemerintah desa)?', options: ['Ya', 'Tidak'] },
+            { id: 'tata_kelola_q3_note', type: 'textarea', text: '3a1. Catatan Tambahan' },
+            { id: 'tata_kelola_q4', type: 'textarea', text: '4a. Bagaimana laporan penggunaan dana BOS dan bantuan lain disampaikan ke publik?' },
+            { id: 'tata_kelola_q4_note', type: 'textarea', text: '4a1. Catatan Tambahan' },
+            { id: 'tata_kelola_q5', type: 'radio', text: '5a. Apakah sekolah mendokumentasikan praktik baik yang bisa dijadikan model untuk sekolah lain?', options: ['Ya', 'Tidak'] },
+            { id: 'tata_kelola_q5_note', type: 'textarea', text: '5a1. Catatan Tambahan' },
+        ];
+        
+        let allSections, currentSectionIndex = 0;
+        
+        const views = { form: document.getElementById('form-view'), report: document.getElementById('report-view'), stats: document.getElementById('stats-view') };
+        const navButtons = { form: document.getElementById('nav-form-btn'), report: document.getElementById('nav-report-btn'), stats: document.getElementById('nav-stats-btn') };
+        const reportContentWrapper = document.getElementById('report-content-wrapper');
+        const printReportBtn = document.getElementById('print-report-btn');
+        const statsContainer = document.getElementById('stats-container');
+        const regionFilter = document.getElementById('region-filter');
+        const statusTableContainer = document.getElementById('status-table-container');
+        const chartCanvas = document.getElementById('inputChart');
+        let inputChart = null; 
+
+        const setContainerLoading = (container) => { container.innerHTML = `<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-4xl text-gray-500"></i><p class="mt-3 text-lg">Memuat data...</p></div>`; };
+        const setContainerError = (container, message) => { container.innerHTML = `<div class="text-center p-8 text-red-600 bg-red-50 rounded-lg"><i class="fas fa-exclamation-triangle text-4xl"></i><p class="mt-3 font-semibold text-lg">Gagal memuat data</p><p class="text-sm text-gray-600 mt-1">${message}</p></div>`; };
+
+        function showView(viewName) {
+            Object.keys(views).forEach(key => {
+                views[key].classList.toggle('hidden-view', key !== viewName);
+                navButtons[key].classList.toggle('active', key === viewName);
+            });
+        }
+
+        navButtons.form.addEventListener('click', () => showView('form'));
+        navButtons.report.addEventListener('click', () => { showView('report'); fetchAggregatedReport(regionFilter.value); });
+        navButtons.stats.addEventListener('click', () => { showView('stats'); updateInputStatusAndChart(); fetchRegionalStats(); });
+
+        function updateInputStatusAndChart() {
+            setContainerLoading(statusTableContainer);
+            if (inputChart) { inputChart.destroy(); }
+            const allRegions = Array.from(document.querySelectorAll('#kota_kabupaten option')).filter(opt => opt.value !== '').map(opt => opt.value);
+            fetch(`${scriptURL}?view=get_regions`).then(res => res.json()).then(submittedRegions => {
+                if (submittedRegions.error) throw new Error(submittedRegions.error);
+                const belumInputRegions = allRegions.filter(region => !submittedRegions.includes(region));
+                const sudahInputRegions = submittedRegions;
+                statusTableContainer.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div><h3 class="text-lg font-semibold text-green-700 mb-4 border-b pb-2"><i class="fas fa-check-circle mr-2"></i>Daerah Sudah Input (${sudahInputRegions.length})</h3><ul class="space-y-2 max-h-96 overflow-y-auto pr-2">${sudahInputRegions.map(r => `<li class="p-3 bg-green-50 rounded-lg text-sm font-medium">${r}</li>`).join('') || `<li class="text-gray-500">Belum ada</li>`}</ul></div>
+                    <div><h3 class="text-lg font-semibold text-red-700 mb-4 border-b pb-2"><i class="fas fa-times-circle mr-2"></i>Daerah Belum Input (${belumInputRegions.length})</h3><ul class="space-y-2 max-h-96 overflow-y-auto pr-2">${belumInputRegions.map(r => `<li class="p-3 bg-red-50 rounded-lg text-sm font-medium">${r}</li>`).join('') || `<li class="text-gray-500">Semua sudah input</li>`}</ul></div>
+                </div>`;
+                const ctx = chartCanvas.getContext('2d');
+                inputChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Sudah Input', 'Belum Input'], datasets: [{ label: 'Status Input Daerah', data: [sudahInputRegions.length, belumInputRegions.length], backgroundColor: ['#10b981', '#ef4444'], borderColor: '#ffffff', borderWidth: 4, hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'bottom', labels: { padding: 20, font: { size: 14 }}}, title: { display: true, text: 'Perbandingan Daerah Sudah vs Belum Input', font: { size: 18, weight: '600' } } } } });
+            }).catch(err => setContainerError(statusTableContainer, err.message));
+        }
+
+        function fetchRegionalStats() {
+            setContainerLoading(statsContainer);
+            fetch(`${scriptURL}?view=regional_stats`).then(res => res.json()).then(data => {
+                if (data.error) throw new Error(data.error);
+                let tableHTML = `<table class="w-full text-sm">
+                    <thead class="bg-gray-100"><tr><th class="rounded-tl-lg">Nama Daerah</th><th class="text-center">Jumlah Input</th><th class="text-center rounded-tr-lg">Rata-rata Kelengkapan</th></tr></thead><tbody>`;
+                if (data.length === 0) { tableHTML += `<tr><td colspan="3" class="text-center py-6 text-gray-500">Belum ada data yang masuk.</td></tr>`; } 
+                else { data.forEach(item => { tableHTML += `<tr><td class="font-medium text-gray-800">${item.nama_daerah}</td><td class="text-center font-semibold">${item.input}</td><td class="text-center font-semibold text-blue-600">${item.persentase}%</td></tr>`; }); }
+                statsContainer.innerHTML = tableHTML + `</tbody></table>`;
+            }).catch(err => setContainerError(statsContainer, err.message));
+        }
+
+        function populateRegionDropdown() {
+            fetch(`${scriptURL}?view=get_regions`).then(res => res.json()).then(regions => {
+                if (regions.error) throw new Error(regions.error);
+                regionFilter.innerHTML = '<option value="semua">Semua Daerah</option>';
+                regions.sort().forEach(region => { const option = document.createElement('option'); option.value = region; option.textContent = region; regionFilter.appendChild(option); });
+            }).catch(err => console.error("Gagal memuat daftar daerah:", err));
+        }
+        
+        function fetchAggregatedReport(region = 'semua') {
+            setContainerLoading(reportContentWrapper);
+            printReportBtn.classList.add('hidden');
+            fetch(`${scriptURL}?view=summary&region=${encodeURIComponent(region)}`).then(res => res.json()).then(data => {
+                if (data.error) {
+                    reportContentWrapper.innerHTML = `<div class="text-center p-12 text-gray-500 bg-gray-50 rounded-lg">${data.error}</div>`;
+                    return;
+                }
+                
+                const { summary } = data;
+                const questions = Object.keys(summary);
+
+                if (questions.length === 0) {
+                    reportContentWrapper.innerHTML = `<div class="text-center p-12 text-gray-500 bg-gray-50 rounded-lg">Belum ada data supervisi untuk daerah ini.</div>`;
+                    printReportBtn.classList.add('hidden');
+                    return;
+                }
+
+                let tableHTML = `<div class="overflow-x-auto"><table class="w-full text-sm">
+                    <thead class="bg-gray-100"><tr><th class="w-2/5 rounded-tl-lg">Pertanyaan</th><th class="rounded-tr-lg">Rekapitulasi Jawaban</th></tr></thead><tbody>`;
+                
+                questions.forEach(q => {
+                    const item = summary[q];
+                    let answersHTML = '';
+                    if (item.type === 'radio') {
+                        const total = Object.values(item.counts).reduce((a, b) => a + b, 0);
+                        if (total > 0) {
+                            answersHTML = Object.entries(item.counts).map(([option, count]) => 
+                                `<div class="flex justify-between items-center text-xs my-1"><span class="font-semibold px-2 py-1 bg-gray-200 rounded">${option}</span><span class="font-bold">${count} (${((count/total)*100).toFixed(1)}%)</span></div>`
+                            ).join('');
+                        }
+                    } else { // textarea
+                        answersHTML = item.answers.map(ans => `<li class="list-disc ml-4 text-xs p-1">${ans}</li>`).join('');
+                    }
+
+                    const notesHTML = item.catatan && item.catatan.length > 0
+                        ? `<div class="mt-3 border-t pt-2"><h4 class="font-semibold text-xs text-gray-500 mb-1">Catatan Tambahan:</h4><ul class="space-y-1">${item.catatan.map(note => `<li class="list-disc ml-4 text-xs">${note}</li>`).join('')}</ul></div>` 
+                        : '';
+
+                    tableHTML += `<tr>
+                        <td class="font-medium text-gray-800 align-top">${q}</td>
+                        <td>
+                            <div class="${item.type === 'textarea' ? 'space-y-2' : ''}">${answersHTML || '<span class="text-gray-400 text-xs">Belum ada jawaban</span>'}</div>
+                            ${notesHTML}
+                        </td>
+                    </tr>`;
+                });
+                
+                tableHTML += `</tbody></table></div>`;
+                reportContentWrapper.innerHTML = tableHTML;
+                printReportBtn.classList.remove('hidden');
+
+            }).catch(err => setContainerError(reportContentWrapper, err.message));
+        }
+
+        regionFilter.addEventListener('change', () => fetchAggregatedReport(regionFilter.value));
+        printReportBtn.addEventListener('click', () => { document.body.classList.add('print-aggregated-report'); window.print(); document.body.classList.remove('print-aggregated-report'); });
+
+        function showModal(type, title, message) {
+            const modal = document.getElementById('responseModal'), modalContent = modal.querySelector('.modal-content'), modalIcon = document.getElementById('modal-icon'), modalTitle = document.getElementById('modal-title'), modalMessage = document.getElementById('modal-message');
+            modalIcon.innerHTML = type === 'success' ? `<i class="fas fa-check text-5xl text-white"></i>` : `<i class="fas fa-times text-5xl text-white"></i>`;
+            modalIcon.className = `mx-auto flex items-center justify-center h-20 w-20 rounded-full mb-5 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            modalTitle.textContent = title; modalMessage.textContent = message;
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95'); }, 20);
+        }
+        function hideModal() {
+            const modal = document.getElementById('responseModal'), modalContent = modal.querySelector('.modal-content');
+            modal.classList.add('opacity-0'); modalContent.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+        document.getElementById('modal-close').addEventListener('click', hideModal);
+
+        function updateButtonVisibility() {
+            prevButton.style.visibility = currentSectionIndex === 0 ? 'hidden' : 'visible';
+            nextButton.classList.toggle('hidden', currentSectionIndex === allSections.length - 1);
+            submitButton.classList.toggle('hidden', currentSectionIndex !== allSections.length - 1);
+        }
+        function showSection(index) {
+            allSections.forEach((s, i) => s.classList.toggle('hidden', i !== index));
+            updateButtonVisibility(); window.scrollTo(0, 0);
+        }
+        function validateCurrentSection() {
+            for (const i of allSections[currentSectionIndex].querySelectorAll('[required]')) { if (!i.checkValidity()) return false; }
+            return true;
+        }
+        nextButton.addEventListener('click', () => { if (validateCurrentSection()) { currentSectionIndex++; showSection(currentSectionIndex); } else { form.reportValidity(); } });
+        prevButton.addEventListener('click', () => { currentSectionIndex--; showSection(currentSectionIndex); });
+        
+        function generateQuestions() {
+            const sections = {
+                akses: { title: 'AKSES', color: 'border-blue-500', icon: 'fas fa-door-open', content: '' },
+                mutu: { title: 'MUTU', color: 'border-purple-500', icon: 'fas fa-award', content: '' },
+                tata_kelola: { title: 'TATA KELOLA', color: 'border-green-500', icon: 'fas fa-cogs', content: '' }
+            };
+
+            for (let i = 0; i < masterData.length; i++) {
+                const field = masterData[i];
+                if (!field.id) continue;
+                const sectionName = Object.keys(sections).find(key => field.id.startsWith(key));
+                if (!sectionName) continue;
+                
+                let fieldHTML = '';
+                if (field.type === 'textarea') {
+                    const isOptional = field.text.toLowerCase().includes('catatan') || field.text.toLowerCase().includes('keterangan');
+                    fieldHTML = `<div class="bg-gray-50 p-5 rounded-lg">
+                        <label for="${field.id}" class="block font-semibold text-gray-800 mb-2">${field.text}</label>
+                        <textarea id="${field.id}" name="${field.id}" rows="4" class="w-full px-3 py-2 border rounded-md shadow-sm" ${isOptional ? '' : 'required'}></textarea>
+                    </div>`;
+                } else if (field.type === 'radio') {
+                    const noteField = masterData[i+1];
+                    let noteHTML = '';
+                    if (noteField && noteField.id === `${field.id}_note`) {
+                        noteHTML = `<label for="${noteField.id}" class="block text-sm font-medium text-gray-700 mt-4 mb-1">${noteField.text} (Opsional)</label>
+                                    <textarea id="${noteField.id}" name="${noteField.id}" rows="2" class="w-full px-3 py-2 border rounded-md shadow-sm"></textarea>`;
+                        i++;
+                    }
+                    const optionsHTML = (field.options || ['Ya', 'Tidak']).map(opt => 
+                        `<label class="flex items-center space-x-2 cursor-pointer text-md">
+                            <input type="radio" name="${field.id}" value="${opt}" class="h-5 w-5 text-blue-600 focus:ring-blue-500" required>
+                            <span>${opt}</span>
+                        </label>`
+                    ).join('');
+                    fieldHTML = `<div class="bg-gray-50 p-5 rounded-lg">
+                        <p class="font-semibold text-gray-800 mb-3">${field.text}</p>
+                        <div class="flex flex-wrap items-center gap-x-8 gap-y-2">${optionsHTML}</div>
+                        ${noteHTML}
+                    </div>`;
+                }
+                sections[sectionName].content += fieldHTML;
+            }
+
+            questionContainer.innerHTML = Object.values(sections).map(s => 
+                `<fieldset class="form-section border-t-4 ${s.color} pt-6">
+                    <legend class="text-2xl font-semibold text-gray-700 px-2 -mt-2"><i class="${s.icon} mr-3"></i>${s.title}</legend>
+                    <div class="space-y-8 mt-6">${s.content}</div>
+                </fieldset>`
+            ).join('');
+        }
+
+        function initializeForm() { 
+            generateQuestions(); 
+            allSections = document.querySelectorAll('.form-section'); 
+            showSection(0); 
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault(); if(!validateCurrentSection()){ form.reportValidity(); return; }
+            submitButton.disabled = true; buttonText.textContent = 'Mengirim...'; loadingSpinner.classList.remove('hidden');
+            const rowData = masterData.map(f => {
+                if (!f.id) return null;
+                const el = form.elements[f.id]; 
+                if (!el) return "";
+                return (el instanceof RadioNodeList) ? el.value || "" : el.value || "";
+            }).filter(d => d !== null);
+            
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(rowData), headers: { 'Content-Type': 'text/plain;charset=utf-8' }})
+            .then(res => res.json()).then(data => { 
+                if (data.result === "success") { 
+                    form.reset(); currentSectionIndex = 0; showSection(0); 
+                    showModal('success', 'Berhasil Terkirim!', 'Data supervisi Anda telah berhasil disimpan.'); 
+                    populateRegionDropdown(); updateInputStatusAndChart(); fetchRegionalStats();
+                } else { throw new Error(data.message || 'Unknown error'); }
+            })
+            .catch(err => showModal('error', 'Gagal Mengirim!', 'Terjadi kesalahan saat mengirim data. Silakan coba lagi. ' + err.message))
+            .finally(() => { submitButton.disabled = false; buttonText.textContent = 'Kirim Data'; loadingSpinner.classList.add('hidden'); });
+        });
+
+        initializeForm();
+        populateRegionDropdown();
+    });
+    </script>
+</body>
+</html>
