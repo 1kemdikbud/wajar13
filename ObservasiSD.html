@@ -24,13 +24,39 @@
             border-bottom-color: #14b8a6; /* teal-500 */
             color: #0d9488; /* teal-600 */
         }
+        
+        /* Print Styles for Individual Report */
+        @media print {
+            .print-individual-report body * { visibility: hidden; }
+            .print-individual-report #print-content-area, .print-individual-report #print-content-area * { visibility: visible; }
+            .print-individual-report #printPreviewModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; overflow: visible; background-color: white; padding: 0; }
+            .print-individual-report #print-content-area { position: absolute; left: 0; top: 0; width: 100%; padding: 1.5cm; font-size: 11pt; color: #000; }
+            .print-individual-report .print-section { margin-bottom: 1.25rem; break-inside: avoid; }
+            .print-individual-report .print-section-title { font-size: 1.1rem; font-weight: 600; border-bottom: 2px solid #ccc; padding-bottom: 0.4rem; margin-bottom: 0.8rem; }
+            .print-individual-report .print-item { margin-bottom: 0.5rem; }
+            .print-individual-report .print-item-grouped { border-top: 1px solid #eee; padding-top: 0.75rem; margin-top: 0.75rem; }
+            .print-individual-report .print-item-label { font-weight: 600; margin-bottom: 0.25rem; }
+            
+            /* Print Styles for Aggregated Report */
+            .print-aggregated-report body > *:not(#printable-report-area) { display: none; }
+            .print-aggregated-report #printable-report-area {
+                visibility: visible !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 1.5cm;
+                font-size: 11pt;
+            }
+             .print-aggregated-report .print-hide { display: none !important; }
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
     <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-7xl">
         
-        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-md">
+        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-md print-hide">
             <h1 class="text-3xl font-bold text-gray-700">Aplikasi Observasi Satuan Pendidikan</h1>
             <p class="text-gray-500 mt-2">Pilih menu di bawah untuk mengisi formulir atau melihat laporan.</p>
             <nav class="flex justify-center items-center gap-4 sm:gap-8 mt-6 border-t pt-4">
@@ -47,6 +73,7 @@
         </header>
         
         <main class="relative">
+            <!-- Form View -->
             <div id="form-view" class="view">
                 <form id="observasiForm" class="bg-white p-8 rounded-xl shadow-lg space-y-8 max-w-4xl mx-auto">
                     <fieldset class="form-section border-t-4 border-teal-500 pt-6">
@@ -117,23 +144,32 @@
                 </form>
             </div>
 
+            <!-- Report View -->
             <div id="report-view" class="view hidden-view">
-                <div class="bg-white p-8 rounded-xl shadow-lg">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-                         <h2 class="text-2xl font-bold text-gray-700 mb-2 sm:mb-0">Hasil Observasi Rinci</h2>
-                        <div class="w-full sm:w-auto">
-                            <label for="region-filter" class="block text-sm font-medium text-gray-600 mb-1">Pilih Daerah:</label>
-                            <select id="region-filter" class="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md shadow-sm">
-                                <option value="semua">Semua Daerah</option>
-                            </select>
+                 <div class="bg-white p-8 rounded-xl shadow-lg">
+                    <div id="printable-report-area">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 print-hide">
+                            <h2 class="text-2xl font-bold text-gray-700 mb-2 sm:mb-0">Laporan Agregat Observasi</h2>
+                            <div class="flex items-center gap-4 w-full sm:w-auto">
+                                <div class="w-full sm:w-auto">
+                                    <label for="region-filter" class="block text-sm font-medium text-gray-600 mb-1">Pilih Daerah:</label>
+                                    <select id="region-filter" class="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md shadow-sm">
+                                        <option value="semua">Semua Daerah</option>
+                                    </select>
+                                </div>
+                                <button id="print-report-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg self-end hidden">
+                                    <i class="fas fa-print mr-2"></i>Cetak
+                                </button>
+                            </div>
+                        </div>
+                        <div id="report-content-wrapper">
+                            <!-- Content (info and table) will be injected here -->
                         </div>
                     </div>
-                    <div id="report-container" class="overflow-x-auto">
-                        <div class="text-center p-8 text-gray-500">Pilih daerah untuk menampilkan data.</div>
-                    </div>
-                </div>
+                 </div>
             </div>
 
+            <!-- Stats View -->
             <div id="stats-view" class="view hidden-view">
                 <div class="bg-white p-8 rounded-xl shadow-lg space-y-12">
                     <div>
@@ -155,20 +191,45 @@
         </main>
     </div>
 
+    <!-- Response Modal -->
     <div id="responseModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-backdrop hidden z-50 opacity-0">
         <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full text-center modal-content scale-95">
             <div id="modal-icon" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4"></div>
             <h3 id="modal-title" class="text-2xl font-semibold text-gray-800"></h3>
             <p id="modal-message" class="text-gray-600 mt-2 mb-6"></p>
-            <button id="modal-close" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-lg">Tutup</button>
+            <div class="flex justify-center gap-4">
+                 <button id="modal-close" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg">Tutup</button>
+                 <button id="modal-print-preview-btn" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-lg hidden">
+                    <i class="fas fa-print mr-2"></i>Lihat Laporan
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- Print Preview Modal (Individual) -->
+    <div id="printPreviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 modal-backdrop hidden z-[60] opacity-0">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl h-[90vh] flex flex-col modal-content scale-95">
+            <header class="p-4 border-b flex justify-between items-center print-hide">
+                <h3 class="text-xl font-semibold text-gray-800">Pratinjau Laporan Observasi</h3>
+                <div class="flex gap-4">
+                    <button id="print-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                        <i class="fas fa-print mr-2"></i>Cetak PDF
+                    </button>
+                    <button id="print-modal-close" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg">Tutup</button>
+                </div>
+            </header>
+            <main id="print-content-area" class="p-8 overflow-y-auto">
+                <!-- Content will be injected here by JavaScript -->
+            </main>
+        </div>
+    </div>
+
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyjWKPkPs8dUl2cQnmEQwpxcjbxE0bSlibVmfsJTwS-Do_iYBdh0c7-Rw3X4bISaHEdlg/exec';
         
-        // --- Bagian Form (tidak berubah) ---
+        // --- Bagian Form ---
         const form = document.getElementById('observasiForm');
         const submitButton = document.getElementById('submit-button');
         const buttonText = document.getElementById('button-text');
@@ -194,17 +255,36 @@
             { id: 'tata_kelola_q4', type: 'radio', text: '4. Apakah keterlibatan orang tua/komite sekolah sudah menjadi budaya dalam tata kelola?' }, { id: 'tata_kelola_q4_note', type: 'textarea' },
             { id: 'tata_kelola_q5', type: 'radio', text: '5. Apakah tata kelola yang berhasil di sekolah ini sudah menjadi rujukan/replikasi bagi sekolah lain?' }, { id: 'tata_kelola_q5_note', type: 'textarea' }
         ];
+        const reportHeaders = [
+            "Timestamp", "Kota/Kabupaten", "Nama Petugas Supervisi", "No. HP Petugas", "Nama Responden", "Nama Satuan Pendidikan", "Alamat Satuan Pendidikan", "Nama Kepala Sekolah", "No HP Kepala Sekolah",
+            "1. Apakah ada upaya yang dilakukan sekolah dalam mencegah Anak Berisiko Putus Sekolah (ABPS)?", "1a. Catatan Tambahan",
+            "2. Apakah ada dukungan/bantuan yang diberikan oleh pihak sekolah atau dinas dalam mencegah Anak Berisiko Putus Sekolah (ABPS)?", "2a. Catatan Tambahan",
+            "3. Apakah fasilitas ramah anak dan ramah disabilitas tetap dipelihara dengan baik?", "3a. Catatan Tambahan",
+            "4. Apakah sekolah memiliki inovasi layanan akses (misalnya kelas tambahan, transportasi, atau program khusus)?", "4a. Catatan Tambahan",
+            "5. Apakah ada pengalaman sekolah dalam mempertahankan APS tinggi sudah didokumentasikan dan disebarluaskan untuk replikasi?", "5a. Catatan Tambahan",
+            "1. Apakah guru menerapkan metode pembelajaran inovatif (digital, tematik, berbasis proyek) yang menjaga mutu meski ATS rendah?", "1a. Catatan Tambahan",
+            "2. Apakah program literasi dan numerasi berjalan konsisten dan hasilnya terukur?", "2a. Catatan Tambahan",
+            "3. Apakah kegiatan ekstrakurikuler mendukung prestasi akademik dan non-akademik siswa?", "3a. Catatan Tambahan",
+            "4. Apakah sekolah memiliki program unggulan yang memperkuat Profil Pelajar Pancasila?", "4a. Catatan Tambahan",
+            "5. Apakah praktik mutu pembelajaran sekolah ini sudah dibagikan ke sekolah lain (forum MGMP/KKG)?", "5a. Catatan Tambahan",
+            "1. Apakah kepala sekolah aktif menjaga stabilitas APS dan mutu layanan pendidikan?", "1a. Catatan Tambahan",
+            "2. Apakah sekolah memiliki strategi keberlanjutan program meski tanpa intervensi eksternal?", "2a. Catatan Tambahan",
+            "3. Apakah transparansi dana BOS tetap dijaga meskipun sekolah sudah stabil (APS bagus)?", "3a. Catatan Tambahan",
+            "4. Apakah keterlibatan orang tua/komite sekolah sudah menjadi budaya dalam tata kelola?", "4a. Catatan Tambahan",
+            "5. Apakah tata kelola yang berhasil di sekolah ini sudah menjadi rujukan/replikasi bagi sekolah lain?", "5a. Catatan Tambahan"
+        ];
         let allSections, currentSectionIndex = 0;
         
         // --- Bagian Navigasi & Tampilan ---
         const views = { form: document.getElementById('form-view'), report: document.getElementById('report-view'), stats: document.getElementById('stats-view') };
         const navButtons = { form: document.getElementById('nav-form-btn'), report: document.getElementById('nav-report-btn'), stats: document.getElementById('nav-stats-btn') };
-        const reportContainer = document.getElementById('report-container');
+        const reportContentWrapper = document.getElementById('report-content-wrapper');
+        const printReportBtn = document.getElementById('print-report-btn');
         const statsContainer = document.getElementById('stats-container');
         const regionFilter = document.getElementById('region-filter');
         const statusTableContainer = document.getElementById('status-table-container');
         const chartCanvas = document.getElementById('inputChart');
-        let inputChart = null; // Variabel untuk menyimpan objek chart
+        let inputChart = null; 
 
         // --- Fungsi Bantuan ---
         const setContainerLoading = (container) => {
@@ -232,147 +312,190 @@
         });
         navButtons.stats.addEventListener('click', () => {
             showView('stats');
-            // Memanggil semua fungsi yang dibutuhkan untuk halaman statistik
             updateInputStatusAndChart();
             fetchRegionalStats();
         });
 
-        // --- Logika untuk Grafik dan Tabel Status (BARU) ---
+        // --- Logika Statistik & Laporan ---
         function updateInputStatusAndChart() {
             setContainerLoading(statusTableContainer);
-            if (inputChart) {
-                inputChart.destroy(); // Hancurkan chart lama jika ada
-            }
-
-            // 1. Ambil daftar semua daerah dari dropdown formulir
-            const allRegions = Array.from(document.querySelectorAll('#kota_kabupaten option'))
-                                   .filter(opt => opt.value !== '')
-                                   .map(opt => opt.value);
-            
-            // 2. Ambil daftar daerah yang sudah input dari Google Sheet
-            fetch(`${scriptURL}?view=get_regions`)
-                .then(res => res.json())
-                .then(submittedRegions => {
-                    if (submittedRegions.error) throw new Error(submittedRegions.error);
-
-                    // 3. Bandingkan dua daftar untuk menemukan yang belum input
-                    const belumInputRegions = allRegions.filter(region => !submittedRegions.includes(region));
-                    const sudahInputRegions = submittedRegions;
-
-                    // 4. Render Tabel Status
-                    let tableHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <h3 class="text-lg font-semibold text-green-600 mb-3"><i class="fas fa-check-circle mr-2"></i>Daerah Sudah Input (${sudahInputRegions.length})</h3>
-                            <ul class="space-y-2">${sudahInputRegions.map(r => `<li class="p-2 bg-green-50 rounded-md text-sm">${r}</li>`).join('') || `<li class="text-gray-500">Belum ada</li>`}</ul>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-red-600 mb-3"><i class="fas fa-times-circle mr-2"></i>Daerah Belum Input (${belumInputRegions.length})</h3>
-                            <ul class="space-y-2">${belumInputRegions.map(r => `<li class="p-2 bg-red-50 rounded-md text-sm">${r}</li>`).join('') || `<li class="text-gray-500">Semua sudah input</li>`}</ul>
-                        </div>
-                    </div>`;
-                    statusTableContainer.innerHTML = tableHTML;
-
-                    // 5. Render Grafik
-                    const ctx = chartCanvas.getContext('2d');
-                    inputChart = new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Sudah Input', 'Belum Input'],
-                            datasets: [{
-                                label: 'Status Input Daerah',
-                                data: [sudahInputRegions.length, belumInputRegions.length],
-                                backgroundColor: [ 'rgb(34, 197, 94)', 'rgb(239, 68, 68)' ],
-                                hoverOffset: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: { position: 'top' },
-                                title: { display: true, text: 'Perbandingan Daerah Sudah vs Belum Input' }
-                            }
-                        }
-                    });
-                })
-                .catch(err => setContainerError(statusTableContainer, err.message));
+            if (inputChart) { inputChart.destroy(); }
+            const allRegions = Array.from(document.querySelectorAll('#kota_kabupaten option')).filter(opt => opt.value !== '').map(opt => opt.value);
+            fetch(`${scriptURL}?view=get_regions`).then(res => res.json()).then(submittedRegions => {
+                if (submittedRegions.error) throw new Error(submittedRegions.error);
+                const belumInputRegions = allRegions.filter(region => !submittedRegions.includes(region));
+                const sudahInputRegions = submittedRegions;
+                let tableHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div><h3 class="text-lg font-semibold text-green-600 mb-3"><i class="fas fa-check-circle mr-2"></i>Daerah Sudah Input (${sudahInputRegions.length})</h3><ul class="space-y-2">${sudahInputRegions.map(r => `<li class="p-2 bg-green-50 rounded-md text-sm">${r}</li>`).join('') || `<li class="text-gray-500">Belum ada</li>`}</ul></div>
+                    <div><h3 class="text-lg font-semibold text-red-600 mb-3"><i class="fas fa-times-circle mr-2"></i>Daerah Belum Input (${belumInputRegions.length})</h3><ul class="space-y-2">${belumInputRegions.map(r => `<li class="p-2 bg-red-50 rounded-md text-sm">${r}</li>`).join('') || `<li class="text-gray-500">Semua sudah input</li>`}</ul></div>
+                </div>`;
+                statusTableContainer.innerHTML = tableHTML;
+                const ctx = chartCanvas.getContext('2d');
+                inputChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Sudah Input', 'Belum Input'], datasets: [{ label: 'Status Input Daerah', data: [sudahInputRegions.length, belumInputRegions.length], backgroundColor: ['rgb(34, 197, 94)', 'rgb(239, 68, 68)'], hoverOffset: 4 }] }, options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Perbandingan Daerah Sudah vs Belum Input' } } } });
+            }).catch(err => setContainerError(statusTableContainer, err.message));
         }
-
-        // --- Logika Fetch Data Lainnya (tidak berubah) ---
         function fetchRegionalStats() {
             setContainerLoading(statsContainer);
-            fetch(`${scriptURL}?view=regional_stats`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.error) throw new Error(data.error);
-                    let tableHTML = `<table class="w-full text-sm">
-                        <thead class="bg-gray-100"><tr><th>Nama Daerah</th><th class="text-center">Jumlah Input</th><th class="text-center">Rata-rata Kelengkapan</th></tr></thead><tbody>`;
-                    if (data.length === 0) {
-                        tableHTML += `<tr><td colspan="3" class="text-center py-4">Belum ada data yang masuk.</td></tr>`;
-                    } else {
-                        data.forEach(item => {
-                            tableHTML += `<tr><td class="font-medium">${item.nama_daerah}</td><td class="text-center">${item.input}</td><td class="text-center">${item.persentase}%</td></tr>`;
-                        });
-                    }
-                    statsContainer.innerHTML = tableHTML + `</tbody></table>`;
-                })
-                .catch(err => setContainerError(statsContainer, err.message));
+            fetch(`${scriptURL}?view=regional_stats`).then(res => res.json()).then(data => {
+                if (data.error) throw new Error(data.error);
+                let tableHTML = `<table class="w-full text-sm">
+                    <thead class="bg-gray-100"><tr><th>Nama Daerah</th><th class="text-center">Jumlah Input</th><th class="text-center">Rata-rata Kelengkapan</th></tr></thead><tbody>`;
+                if (data.length === 0) { tableHTML += `<tr><td colspan="3" class="text-center py-4">Belum ada data yang masuk.</td></tr>`; } 
+                else { data.forEach(item => { tableHTML += `<tr><td class="font-medium">${item.nama_daerah}</td><td class="text-center">${item.input}</td><td class="text-center">${item.persentase}%</td></tr>`; }); }
+                statsContainer.innerHTML = tableHTML + `</tbody></table>`;
+            }).catch(err => setContainerError(statsContainer, err.message));
         }
-
         function populateRegionDropdown() {
-            fetch(`${scriptURL}?view=get_regions`)
-                .then(res => res.json())
-                .then(regions => {
-                    if (regions.error) throw new Error(regions.error);
-                    regionFilter.innerHTML = '<option value="semua">Semua Daerah</option>';
-                    regions.forEach(region => {
-                        const option = document.createElement('option');
-                        option.value = region;
-                        option.textContent = region;
-                        regionFilter.appendChild(option);
-                    });
-                })
-                .catch(err => console.error("Gagal memuat daftar daerah:", err));
+            fetch(`${scriptURL}?view=get_regions`).then(res => res.json()).then(regions => {
+                if (regions.error) throw new Error(regions.error);
+                regionFilter.innerHTML = '<option value="semua">Semua Daerah</option>';
+                regions.forEach(region => { const option = document.createElement('option'); option.value = region; option.textContent = region; regionFilter.appendChild(option); });
+            }).catch(err => console.error("Gagal memuat daftar daerah:", err));
         }
         
         function fetchObservationReport(region = 'semua') {
-            setContainerLoading(reportContainer);
+            setContainerLoading(reportContentWrapper);
+            printReportBtn.classList.add('hidden');
             const url = `${scriptURL}?view=summary&region=${encodeURIComponent(region)}`;
-            fetch(url)
-                .then(res => res.json())
-                .then(summaryData => {
-                    if (summaryData.error) throw new Error(summaryData.error);
-                    let tableHTML = `<table class="w-full text-sm">
+            fetch(url).then(res => res.json()).then(data => {
+                if (data.error) {
+                    reportContentWrapper.innerHTML = `<div class="text-center p-8 text-gray-500">${data.error}</div>`;
+                    return;
+                }
+                
+                const { summary, details } = data;
+
+                let totalSubmissions = 0;
+                if (Object.keys(summary).length > 0) {
+                    totalSubmissions = Math.max(0, ...Object.values(summary).map(
+                        item => (item.ya || 0) + (item.tidak || 0) + (item.tidakOptimal || 0)
+                    ));
+                }
+                
+                const createInfoRow = (label, items) => {
+                    if (!items || (Array.isArray(items) && items.length === 0)) return '';
+                    const displayValue = Array.isArray(items) ? items.join(', ') : items;
+                    return `
+                        <div class="font-semibold">${label}</div>
+                        <div>: ${displayValue}</div>
+                    `;
+                };
+
+                const infoHTML = `
+                    <div class="mb-8 border-b pb-6 hidden print:block">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Informasi Laporan Agregat</h3>
+                        <div class="grid grid-cols-[max-content,1fr] gap-x-4 gap-y-2 text-gray-800 text-sm">
+                            ${createInfoRow('Daerah Laporan', region === 'semua' ? 'Nasional (Semua Daerah)' : region)}
+                            ${createInfoRow('Jumlah Data Masuk', `${totalSubmissions} Laporan`)}
+                            ${createInfoRow('Petugas Supervisi', details.petugas)}
+                            ${createInfoRow('Responden', details.responden)}
+                            ${createInfoRow('Satuan Pendidikan', details.satuanPendidikan)}
+                            ${createInfoRow('Kepala Sekolah', details.kepalaSekolah)}
+                        </div>
+                    </div>
+                `;
+
+                let tableHTML;
+                if (totalSubmissions === 0) {
+                    tableHTML = `<div class="text-center p-8 text-gray-500">Belum ada data observasi untuk daerah ini.</div>`;
+                    printReportBtn.classList.add('hidden');
+                } else {
+                    tableHTML = `<div class="overflow-x-auto"><table class="w-full text-sm">
                         <thead class="bg-gray-100"><tr><th class="w-1/3">Pertanyaan</th><th class="text-center">Ya</th><th class="text-center">Tidak</th><th class="text-center">Tidak Optimal</th><th>Catatan Tambahan</th></tr></thead><tbody>`;
-                    if (Object.keys(summaryData).length === 0) {
-                       tableHTML += `<tr><td colspan="5" class="text-center py-4">Belum ada data observasi.</td></tr>`;
-                    } else {
-                       for (const question in summaryData) {
-                           const data = summaryData[question];
-                           const notesHTML = data.catatan.map(note => `<li class="list-disc ml-4">${note}</li>`).join('');
-                           tableHTML += `<tr><td class="font-medium">${question}</td><td class="text-center">${data.ya}</td><td class="text-center">${data.tidak}</td><td class="text-center">${data.tidakOptimal}</td><td><ul class="space-y-1">${notesHTML || 'Tidak ada'}</ul></td></tr>`;
-                       }
+                    for (const question in summary) {
+                        const item = summary[question];
+                        const notesHTML = item.catatan.map(note => `<li class="list-disc ml-4">${note}</li>`).join('');
+                        tableHTML += `<tr><td class="font-medium">${question}</td><td class="text-center">${item.ya}</td><td class="text-center">${item.tidak}</td><td class="text-center">${item.tidakOptimal}</td><td><ul class="space-y-1">${notesHTML || 'Tidak ada'}</ul></td></tr>`;
                     }
-                    reportContainer.innerHTML = tableHTML + `</tbody></table>`;
-                })
-                .catch(err => setContainerError(reportContainer, err.message));
+                    tableHTML += `</tbody></table></div>`;
+                    printReportBtn.classList.remove('hidden');
+                }
+                
+                reportContentWrapper.innerHTML = infoHTML + tableHTML;
+
+            }).catch(err => setContainerError(reportContentWrapper, err.message));
         }
 
         regionFilter.addEventListener('change', () => fetchObservationReport(regionFilter.value));
+        printReportBtn.addEventListener('click', () => {
+            document.body.classList.add('print-aggregated-report');
+            window.print();
+            document.body.classList.remove('print-aggregated-report');
+        });
 
-        // --- Logika Form (tidak berubah) ---
-        function showModal(type, title, message) {
-            const modal = document.getElementById('responseModal'), modalContent = document.querySelector('.modal-content'), modalIcon = document.getElementById('modal-icon'), modalTitle = document.getElementById('modal-title'), modalMessage = document.getElementById('modal-message');
+        // --- Logika Modal & Pratinjau Cetak Individual ---
+        function showModal(type, title, message, printData = null) {
+            const modal = document.getElementById('responseModal'), modalContent = modal.querySelector('.modal-content'), modalIcon = document.getElementById('modal-icon'), modalTitle = document.getElementById('modal-title'), modalMessage = document.getElementById('modal-message'), printPreviewBtn = document.getElementById('modal-print-preview-btn');
             modalIcon.innerHTML = type === 'success' ? `<i class="fas fa-check text-4xl text-green-500"></i>` : `<i class="fas fa-times text-4xl text-red-500"></i>`;
             modalIcon.className = `mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-4 ${type === 'success' ? 'bg-green-100' : 'bg-red-100'}`;
-            modalTitle.textContent = title; modalMessage.textContent = message; modal.classList.remove('hidden');
+            modalTitle.textContent = title; modalMessage.textContent = message;
+            if (type === 'success' && printData) {
+                printPreviewBtn.classList.remove('hidden');
+                printPreviewBtn.onclick = () => { hideModal(); setTimeout(() => displayPrintPreview(printData), 300); };
+            } else {
+                printPreviewBtn.classList.add('hidden'); printPreviewBtn.onclick = null;
+            }
+            modal.classList.remove('hidden');
             setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95'); }, 10);
         }
         function hideModal() {
-            const modal = document.getElementById('responseModal'), modalContent = document.querySelector('.modal-content');
+            const modal = document.getElementById('responseModal'), modalContent = modal.querySelector('.modal-content');
             modal.classList.add('opacity-0'); modalContent.classList.add('scale-95');
             setTimeout(() => modal.classList.add('hidden'), 300);
         }
         document.getElementById('modal-close').addEventListener('click', hideModal);
+
+        function displayPrintPreview(data) {
+            const contentArea = document.getElementById('print-content-area');
+            const modal = document.getElementById('printPreviewModal');
+            const dataMap = reportHeaders.map((header, index) => ({ label: header, value: data[index] || 'N/A' }));
+            
+            const renderSection = (title, startIndex, endIndex) => {
+                let itemsHtml = '';
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (dataMap[i+1] && dataMap[i+1].label.includes('Catatan Tambahan')) {
+                         itemsHtml += `<div class="print-item print-item-grouped"><div class="print-item-label">${dataMap[i].label}</div><div class="print-item-value"><p class="font-semibold">${dataMap[i].value}</p><p class="text-sm text-gray-600 mt-2"><strong>Catatan:</strong> ${dataMap[i+1].value !== 'N/A' && dataMap[i+1].value ? dataMap[i+1].value : '<em>Tidak ada catatan</em>'}</p></div></div>`;
+                        i++; 
+                    } else { itemsHtml += `<div class="print-item"><div class="print-item-label">${dataMap[i].label}</div><div class="print-item-value">${dataMap[i].value}</div></div>`; }
+                }
+                return `<div class="print-section"><h4 class="print-section-title">${title}</h4>${itemsHtml}</div>`;
+            };
+
+            let timestamp = new Date(dataMap[0].value).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'long'});
+            contentArea.innerHTML = `
+                <div class="text-center mb-8"><h2 class="text-2xl font-bold">Laporan Hasil Observasi</h2><p class="text-gray-500">Waktu Input: ${timestamp}</p></div>
+                <div class="print-section"><h4 class="print-section-title">Informasi Umum</h4>
+                    <div class="print-item"><div class="print-item-label">Kota/Kabupaten</div><div class="print-item-value">${dataMap[1].value}</div></div>
+                    <div class="print-item"><div class="print-item-label">Nama Satuan Pendidikan</div><div class="print-item-value">${dataMap[5].value}</div></div>
+                    <div class="print-item"><div class="print-item-label">Alamat Satuan Pendidikan</div><div class="print-item-value">${dataMap[6].value}</div></div>
+                </div>
+                <div class="print-section"><h4 class="print-section-title">Detail Responden & Petugas</h4>
+                    <div class="print-item"><div class="print-item-label">Nama Petugas Supervisi</div><div class="print-item-value">${dataMap[2].value}</div></div>
+                    <div class="print-item"><div class="print-item-label">No. HP Petugas</div><div class="print-item-value">${dataMap[3].value}</div></div>
+                    <div class="print-item"><div class="print-item-label">Nama Responden</div><div class="print-item-value">${dataMap[4].value}</div></div>
+                    <div class="print-item"><div class="print-item-label">Nama Kepala Sekolah</div><div class="print-item-value">${dataMap[7].value}</div></div>
+                    <div class="print-item"><div class="print-item-label">No. HP Kepala Sekolah</div><div class="print-item-value">${dataMap[8].value}</div></div>
+                </div>
+                ${renderSection('Hasil Observasi: Akses', 9, 19)}
+                ${renderSection('Hasil Observasi: Mutu', 19, 29)}
+                ${renderSection('Hasil Observasi: Tata Kelola', 29, 39)}
+            `;
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('.modal-content').classList.remove('scale-95'); }, 10);
+        }
+        document.getElementById('print-button').addEventListener('click', () => {
+             document.body.classList.add('print-individual-report');
+             window.print();
+             document.body.classList.remove('print-individual-report');
+        });
+        document.getElementById('print-modal-close').addEventListener('click', () => {
+            const modal = document.getElementById('printPreviewModal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('.modal-content').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        });
+
+        // --- Logika Form ---
         function updateButtonVisibility() {
             prevButton.classList.toggle('hidden', currentSectionIndex === 0);
             nextButton.classList.toggle('hidden', currentSectionIndex === allSections.length - 1);
@@ -380,34 +503,28 @@
         }
         function showSection(index) {
             allSections.forEach((s, i) => s.classList.toggle('hidden', i !== index));
-            updateButtonVisibility();
-            window.scrollTo(0, 0);
+            updateButtonVisibility(); window.scrollTo(0, 0);
         }
         function validateCurrentSection() {
-            const s = allSections[currentSectionIndex];
-            for (const i of s.querySelectorAll('[required]')) { if (!i.checkValidity()) return false; }
+            for (const i of allSections[currentSectionIndex].querySelectorAll('[required]')) { if (!i.checkValidity()) return false; }
             return true;
         }
-        nextButton.addEventListener('click', () => {
-            if (validateCurrentSection()) { currentSectionIndex++; showSection(currentSectionIndex); } else { form.reportValidity(); }
-        });
+        nextButton.addEventListener('click', () => { if (validateCurrentSection()) { currentSectionIndex++; showSection(currentSectionIndex); } else { form.reportValidity(); } });
         prevButton.addEventListener('click', () => { currentSectionIndex--; showSection(currentSectionIndex); });
+        
         function generateQuestions() {
             const sections = { akses: { b: 'border-blue-500', h: '' }, mutu: { b: 'border-purple-500', h: '' }, tata_kelola: { b: 'border-green-500', h: '' } };
             for (let i = 0; i < masterData.length; i++) {
                 const field = masterData[i];
                 if (field.type === 'radio') {
-                    const noteField = masterData[i + 1]; const sData = sections[field.id.split('_')[0]];
+                    const noteField = masterData[i + 1]; const sectionName = field.id.split('_').slice(0, -1).join('_');
+					const sData = sections[sectionName];
                     if (sData) sData.h += `<div class="bg-gray-50 p-4 rounded-lg border"><p class="font-medium text-gray-700 mb-2">${field.text}</p><div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-3">${['Ya','Tidak','Tidak Optimal'].map(o=>`<label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="${field.id}" value="${o}" class="h-4 w-4 text-teal-600" required><span>${o}</span></label>`).join('')}</div><label class="block text-sm font-medium text-gray-600 mb-1">Catatan Tambahan</label><textarea name="${noteField.id}" rows="2" class="w-full px-3 py-2 border rounded-md"></textarea></div>`;
                 }
             }
             questionContainer.innerHTML = `<fieldset class="form-section border-t-4 ${sections.akses.b} pt-6"><legend class="text-xl font-semibold text-gray-700 px-2">AKSES</legend><div class="space-y-6 mt-4">${sections.akses.h}</div></fieldset><fieldset class="form-section border-t-4 ${sections.mutu.b} pt-6"><legend class="text-xl font-semibold text-gray-700 px-2">MUTU</legend><div class="space-y-6 mt-4">${sections.mutu.h}</div></fieldset><fieldset class="form-section border-t-4 ${sections.tata_kelola.b} pt-6"><legend class="text-xl font-semibold text-gray-700 px-2">TATA KELOLA</legend><div class="space-y-6 mt-4">${sections.tata_kelola.h}</div></fieldset>`;
         }
-        function initializeForm() {
-            generateQuestions();
-            allSections = document.querySelectorAll('.form-section');
-            showSection(0);
-        }
+        function initializeForm() { generateQuestions(); allSections = document.querySelectorAll('.form-section'); showSection(0); }
         form.addEventListener('submit', e => {
             e.preventDefault(); if(!validateCurrentSection()){ form.reportValidity(); return; }
             submitButton.disabled = true; buttonText.textContent = 'Mengirim...'; loadingSpinner.classList.remove('hidden');
@@ -415,21 +532,13 @@
             fetch(scriptURL, { method: 'POST', body: JSON.stringify(rowData), headers: { 'Content-Type': 'text/plain;charset=utf-8' }})
             .then(res => res.json()).then(data => { 
                 if (data.result === "success") { 
-                    form.reset(); 
-                    currentSectionIndex = 0; 
-                    showSection(0); 
-                    showModal('success', 'Berhasil!', 'Data observasi Anda telah berhasil dikirim.'); 
-                    populateRegionDropdown();
-                } else { 
-                    throw new Error(data.message); 
-                }
+                    form.reset(); currentSectionIndex = 0; showSection(0); 
+                    showModal('success', 'Berhasil!', 'Data observasi Anda telah berhasil dikirim.', data.savedData); 
+                    populateRegionDropdown(); updateInputStatusAndChart(); fetchRegionalStats();
+                } else { throw new Error(data.message || 'Unknown error'); }
             })
             .catch(err => showModal('error', 'Gagal!', 'Gagal mengirim data: ' + err.message))
-            .finally(() => { 
-                submitButton.disabled = false; 
-                buttonText.textContent = 'Kirim Data'; 
-                loadingSpinner.classList.add('hidden'); 
-            });
+            .finally(() => { submitButton.disabled = false; buttonText.textContent = 'Kirim Data'; loadingSpinner.classList.add('hidden'); });
         });
 
         // --- Inisialisasi Awal ---
@@ -439,3 +548,4 @@
     </script>
 </body>
 </html>
+
