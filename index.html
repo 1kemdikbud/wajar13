@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman Akses</title>
+    <!-- Memuat Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Gaya tambahan untuk latar belakang dan transisi */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', sans-serif; /* Menggunakan font Inter */
+        }
+        /* Animasi untuk kartu saat di-hover */
+        .card-hover {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        /* Animasi untuk modal */
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-leave {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Kontainer utama untuk kartu -->
+    <div class="container mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+            <!-- Kartu 1: Sekolah Dasar -->
+            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center flex flex-col items-center">
+                <div class="text-6xl text-blue-500 mb-4">
+                    <i class="fas fa-school"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Sekolah Dasar</h2>
+                <p class="text-gray-600 mb-8">Akses tautan terkait untuk manajemen dan observasi Sekolah Dasar.</p>
+                <div class="grid grid-cols-2 gap-4 w-full">
+                    <button data-url="ObservasiSD" class="action-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Observasi SD</button>
+                    <button data-url="ObservasiSD" class="action-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Dinas</button>
+                    <button data-url="ObservasiSD" class="action-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Satuan Pendidikan</button>
+                    <button data-url="ObservasiSD" class="action-button bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Lainnya</button>
+                </div>
+            </div>
+
+            <!-- Kartu 2: SKBM -->
+            <div class="card-hover bg-white rounded-2xl shadow-lg p-8 text-center flex flex-col items-center">
+                <div class="text-6xl text-teal-500 mb-4">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">SKBM</h2>
+                <p class="text-gray-600 mb-8">Akses tautan terkait untuk manajemen dan observasi SKBM (Sanggar Kegiatan Belajar Mandiri).</p>
+                <div class="grid grid-cols-2 gap-4 w-full">
+                    <button data-url="ObservasiSD" class="action-button bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Observasi SKBM</button>
+                    <button data-url="ObservasiSD" class="action-button bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Dinas</button>
+                    <button data-url="ObservasiSD" class="action-button bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Satuan Pendidikan</button>
+                    <button data-url="ObservasiSD" class="action-button bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Lainnya</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal untuk Password -->
+    <div id="password-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Verifikasi Akses</h3>
+            <p class="text-gray-600 mb-6">Silakan masukkan kata sandi untuk melanjutkan.</p>
+            <input type="password" id="password-input" class="w-full border-2 border-gray-300 rounded-lg p-3 text-center text-lg focus:outline-none focus:border-indigo-500 transition" placeholder="******">
+            <p id="error-message" class="text-red-500 text-sm mt-2 h-5"></p>
+            <div class="flex gap-4 mt-4">
+                <button id="cancel-button" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 rounded-lg transition duration-300">Batal</button>
+                <button id="submit-password" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition duration-300">Lanjut</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mendapatkan elemen-elemen yang dibutuhkan dari DOM
+        const modal = document.getElementById('password-modal');
+        const modalContent = document.getElementById('modal-content');
+        const passwordInput = document.getElementById('password-input');
+        const submitButton = document.getElementById('submit-password');
+        const cancelButton = document.getElementById('cancel-button');
+        const errorMessage = document.getElementById('error-message');
+        const actionButtons = document.querySelectorAll('.action-button');
+
+        const correctPassword = "WAJAR13";
+        let targetUrl = '';
+
+        // Fungsi untuk menampilkan modal
+        const showModal = (url) => {
+            targetUrl = url;
+            passwordInput.value = ''; // Mengosongkan input
+            errorMessage.textContent = ''; // Mengosongkan pesan error
+            modal.classList.remove('hidden');
+            modalContent.classList.remove('modal-leave');
+            modalContent.classList.add('modal-enter');
+        };
+
+        // Fungsi untuk menyembunyikan modal
+        const hideModal = () => {
+            modalContent.classList.remove('modal-enter');
+            modalContent.classList.add('modal-leave');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // Sesuaikan dengan durasi animasi
+        };
+
+        // Menambahkan event listener ke semua tombol aksi
+        actionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const url = button.getAttribute('data-url');
+                showModal(url);
+            });
+        });
+
+        // Event listener untuk tombol submit di modal
+        submitButton.addEventListener('click', () => {
+            if (passwordInput.value === correctPassword) {
+                // Jika password benar, arahkan ke URL tujuan
+                window.location.href = targetUrl;
+            } else {
+                // Jika password salah, tampilkan pesan error
+                errorMessage.textContent = 'Kata sandi salah. Coba lagi.';
+                // Menambahkan efek getaran pada input
+                passwordInput.classList.add('animate-shake');
+                setTimeout(() => {
+                   passwordInput.classList.remove('animate-shake');
+                }, 500);
+            }
+        });
+        
+        // Memungkinkan submit dengan menekan tombol Enter
+        passwordInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                submitButton.click();
+            }
+        });
+
+        // Membersihkan pesan error saat pengguna mulai mengetik lagi
+        passwordInput.addEventListener('input', () => {
+            errorMessage.textContent = '';
+        });
+
+        // Event listener untuk tombol batal dan klik di luar modal
+        cancelButton.addEventListener('click', hideModal);
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                hideModal();
+            }
+        });
+
+        // Menambahkan sedikit keyframe untuk animasi getaran (shake)
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = `
+            @keyframes shake {
+                10%, 90% { transform: translate3d(-1px, 0, 0); }
+                20%, 80% { transform: translate3d(2px, 0, 0); }
+                30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+                40%, 60% { transform: translate3d(4px, 0, 0); }
+            }
+            .animate-shake {
+                animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    </script>
+
+</body>
+</html>
